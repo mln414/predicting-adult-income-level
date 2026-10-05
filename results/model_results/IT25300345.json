@@ -1,0 +1,1 @@
+{"member": "IT25300345", "model": "RandomForest", "best_params": {"n_estimators": 100, "min_samples_split": 10, "min_samples_leaf": 2, "max_features": "sqrt", "max_depth": 30, "class_weight": "balanced"}, "metrics": {"accuracy": 0.8231441048034934, "precision": 0.5856812933025404, "recall": 0.8425249169435216, "f1": 0.691008174386921, "roc_auc": 0.9161142093436254}}
