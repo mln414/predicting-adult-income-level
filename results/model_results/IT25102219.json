@@ -1,0 +1,23 @@
+﻿{
+    "it_number": "IT25102219",
+    "model_name": "LogisticRegression",
+    "best_hyperparameters": {
+        "C": 100,
+        "class_weight": "balanced",
+        "penalty": "l2",
+        "solver": "lbfgs",
+        "max_iter": 3000
+    },
+    "metrics": {
+        "Accuracy": 0.8112913287585777,
+        "Balanced_Accuracy": 0.8276463144724433,
+        "Precision": 0.564438619484491,
+        "Recall": 0.8584717607973422,
+        "F1_Score": 0.6810753821823933,
+        "ROC_AUC": 0.904974451712145,
+        "Train_Accuracy": 0.8067534898229743,
+        "Test_Accuracy": 0.8112913287585777,
+        "Generalization_Gap": 0.004537838935603333,
+        "Best_CV_F1": 0.671846
+    }
+}
