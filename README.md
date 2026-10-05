@@ -77,7 +77,8 @@ predicting-adult-income-level/
 │
 └── results/
     ├── outputs/                       # Review 1 output (adult_processed.csv)
-    ├── eda_visualizations/            # EDA charts & model evaluation plots
+    ├── eda_visualizations/            # Review 1 EDA charts
+    │   └── models/                    # Review 2 model evaluation plots (.gitkeep)
     └── model_results/                 # Serialized individual JSON metrics for comparison
         ├── .gitkeep
         └── <IT_NUMBER>.json
