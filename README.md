@@ -107,3 +107,19 @@ pip install -r requirements.txt
    save_member_result("IT2510XXXX", "ModelName", best_params, metrics)
    ```
 4. Run `group_model_comparison.ipynb` to aggregate all 6 models and generate the final group comparison table and charts for the viva.
+
+### Interactive Prediction Demo
+Install the project dependencies, make sure `data/raw/adult.csv` and the generated
+`results/outputs/adult_processed.csv` are present, then start the local Streamlit app
+from the repository root:
+
+```bash
+streamlit run app/streamlit_app.py
+```
+
+The app trains the implemented KNN, Logistic Regression, and Decision Tree models
+on startup and caches them for the current app session. It accepts original,
+human-readable Adult dataset fields and applies the project's preprocessing before
+prediction. Random Forest, SVM, and Gradient Boosting are listed but unavailable
+until their model implementations are added to this checkout. This is an academic
+demonstration, not a tool for real-world decisions.
