@@ -61,24 +61,28 @@ selected_model = st.selectbox(
 if selected_model in AVAILABLE_MODELS:
     member_id = AVAILABLE_MODELS[selected_model]
     model_json_path = PROJECT_ROOT / "results" / "model_results" / f"{member_id}.json"
+    info_parts = [f"<strong>Student ID:</strong> <code>{member_id}</code>"]
     if model_json_path.exists():
-        try:
-            with open(model_json_path, "r", encoding="utf-8") as f:
-                res_data = json.load(f)
-            metrics = res_data.get("metrics") or res_data.get("tuned") or {}
-            acc = metrics.get("Accuracy") or metrics.get("accuracy")
-            f1 = metrics.get("F1_Score") or metrics.get("f1_score")
-            auc = metrics.get("ROC_AUC") or metrics.get("roc_auc")
-            info_parts = [f"**Student ID:** `{member_id}`"]
-            if acc is not None:
-                info_parts.append(f"**Test Accuracy:** {float(acc):.2%}")
-            if f1 is not None:
-                info_parts.append(f"**Test F1:** {float(f1):.4f}")
-            if auc is not None:
-                info_parts.append(f"**ROC-AUC:** {float(auc):.4f}")
-            st.caption(" | ".join(info_parts))
-        except Exception:
-            st.caption(f"**Student ID:** `{member_id}`")
+        with open(model_json_path, "r", encoding="utf-8-sig") as f:
+            res_data = json.load(f)
+        metrics = res_data.get("metrics") or res_data.get("tuned") or {}
+        for acc_key in ("Accuracy", "accuracy"):
+            if acc_key in metrics:
+                info_parts.append(f"<strong>Test Accuracy:</strong> {float(metrics[acc_key]):.2%}")
+                break
+        for f1_key in ("F1_Score", "f1_score"):
+            if f1_key in metrics:
+                info_parts.append(f"<strong>Test F1:</strong> {float(metrics[f1_key]):.4f}")
+                break
+        for auc_key in ("ROC_AUC", "roc_auc"):
+            if auc_key in metrics:
+                info_parts.append(f"<strong>ROC-AUC:</strong> {float(metrics[auc_key]):.4f}")
+                break
+    st.markdown(
+        '<p style="color: gray; font-size: 0.85em;">' + " &nbsp;|&nbsp; ".join(info_parts) + "</p>",
+        unsafe_allow_html=True,
+    )
+
 else:
     st.warning(
         f"{selected_model} is listed as a planned group model "
