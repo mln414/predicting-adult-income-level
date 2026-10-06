@@ -3,18 +3,22 @@
 from pathlib import Path
 from typing import Any
 
+import joblib
 import numpy as np
 import pandas as pd
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.preprocessing import RobustScaler, StandardScaler
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import RobustScaler, StandardScaler
+from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 RAW_DATA_PATH = PROJECT_ROOT / "data" / "raw" / "adult.csv"
 PROCESSED_DATA_PATH = PROJECT_ROOT / "results" / "outputs" / "adult_processed.csv"
+SAVED_MODELS_DIR = PROJECT_ROOT / "results" / "saved_models"
 
 NUMERIC_FEATURES = [
     "age",
@@ -39,12 +43,32 @@ AVAILABLE_MODELS = {
     "K-Nearest Neighbors (KNN)": "IT25102064",
     "Logistic Regression": "IT25102219",
     "Decision Tree": "IT25101220",
-}
-UNAVAILABLE_MODELS = {
     "Random Forest": "IT25300345",
-    "Support Vector Machine (SVM)": "IT25103014",
     "Gradient Boosting": "IT25300115",
+    "Support Vector Machine (SVM)": "IT25103014",
 }
+UNAVAILABLE_MODELS = {}
+
+
+class SVMProbabilityWrapper:
+    """Wrapper around SVC providing probability estimates via calibrated sigmoid transformation."""
+
+    def __init__(self, svc: SVC):
+        self.svc = svc
+        self.classes_ = np.array([0, 1])
+
+    def fit(self, X, y):
+        self.svc.fit(X, y)
+        self.classes_ = np.array(self.svc.classes_)
+        return self
+
+    def predict(self, X):
+        return self.svc.predict(X)
+
+    def predict_proba(self, X):
+        decision = self.svc.decision_function(X)
+        prob_1 = 1.0 / (1.0 + np.exp(-np.clip(decision, -500, 500)))
+        return np.column_stack([1.0 - prob_1, prob_1])
 
 
 def _prepare_project_data() -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, StandardScaler, dict[str, list[str]]]:
@@ -117,10 +141,10 @@ def _prepare_project_data() -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, Stan
 
 
 def load_demo_bundle() -> dict[str, Any]:
-    """Train and return the implemented models and metadata for the demo."""
+    """Train or load all 6 group models and metadata for the interactive demo."""
     X, y, input_reference, input_scaler, category_levels = _prepare_project_data()
 
-    models = {
+    model_definitions: dict[str, Any] = {
         "K-Nearest Neighbors (KNN)": Pipeline(
             [
                 ("scaler", RobustScaler()),
@@ -138,6 +162,7 @@ def load_demo_bundle() -> dict[str, Any]:
         "Logistic Regression": LogisticRegression(
             C=100,
             class_weight="balanced",
+            penalty="l2",
             solver="lbfgs",
             max_iter=3000,
             random_state=42,
@@ -150,9 +175,57 @@ def load_demo_bundle() -> dict[str, Any]:
             min_samples_split=20,
             random_state=42,
         ),
+        "Random Forest": RandomForestClassifier(
+            n_estimators=300,
+            min_samples_split=10,
+            min_samples_leaf=1,
+            max_features="sqrt",
+            class_weight="balanced_subsample",
+            random_state=42,
+            n_jobs=-1,
+        ),
+        "Gradient Boosting": GradientBoostingClassifier(
+            n_estimators=500,
+            learning_rate=0.05,
+            max_depth=5,
+            min_samples_split=2,
+            min_samples_leaf=1,
+            max_features=None,
+            subsample=0.8,
+            random_state=42,
+        ),
+        "Support Vector Machine (SVM)": SVMProbabilityWrapper(
+            SVC(
+                kernel="rbf",
+                C=1,
+                gamma="scale",
+                class_weight="balanced",
+                random_state=42,
+            )
+        ),
     }
-    for model in models.values():
+
+    SAVED_MODELS_DIR.mkdir(parents=True, exist_ok=True)
+    models: dict[str, Any] = {}
+
+    for name, model in model_definitions.items():
+        member_id = AVAILABLE_MODELS.get(name, "model")
+        slug = f"{member_id}_{name.replace(' ', '_').replace('(', '').replace(')', '')}"
+        saved_file = SAVED_MODELS_DIR / f"{slug}.joblib"
+
+        if saved_file.exists():
+            try:
+                models[name] = joblib.load(saved_file)
+                continue
+            except Exception:
+                pass
+
         model.fit(X, y)
+        try:
+            joblib.dump(model, saved_file)
+        except Exception:
+            pass
+        models[name] = model
 
     numeric_defaults = {
         column: {

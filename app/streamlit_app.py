@@ -1,8 +1,10 @@
 """Interactive Streamlit demonstration for Adult Income classifiers."""
 
+import json
 import sys
 from pathlib import Path
 
+import numpy as np
 import streamlit as st
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -35,7 +37,7 @@ def get_demo_bundle():
 
 
 try:
-    with st.spinner("Preparing the dataset and training available models..."):
+    with st.spinner("Preparing the dataset and loading trained models..."):
         bundle = get_demo_bundle()
 except (FileNotFoundError, ValueError) as error:
     st.error(str(error))
@@ -46,7 +48,7 @@ all_model_names = list(AVAILABLE_MODELS) + list(UNAVAILABLE_MODELS)
 
 def model_status(name: str) -> str:
     if name in AVAILABLE_MODELS:
-        return name
+        return f"{name} ({AVAILABLE_MODELS[name]})"
     return f"{name} (not yet available)"
 
 
@@ -56,12 +58,32 @@ selected_model = st.selectbox(
     format_func=model_status,
 )
 
-if selected_model not in AVAILABLE_MODELS:
+if selected_model in AVAILABLE_MODELS:
+    member_id = AVAILABLE_MODELS[selected_model]
+    model_json_path = PROJECT_ROOT / "results" / "model_results" / f"{member_id}.json"
+    if model_json_path.exists():
+        try:
+            with open(model_json_path, "r", encoding="utf-8") as f:
+                res_data = json.load(f)
+            metrics = res_data.get("metrics") or res_data.get("tuned") or {}
+            acc = metrics.get("Accuracy") or metrics.get("accuracy")
+            f1 = metrics.get("F1_Score") or metrics.get("f1_score")
+            auc = metrics.get("ROC_AUC") or metrics.get("roc_auc")
+            info_parts = [f"**Student ID:** `{member_id}`"]
+            if acc is not None:
+                info_parts.append(f"**Test Accuracy:** {float(acc):.2%}")
+            if f1 is not None:
+                info_parts.append(f"**Test F1:** {float(f1):.4f}")
+            if auc is not None:
+                info_parts.append(f"**ROC-AUC:** {float(auc):.4f}")
+            st.caption(" | ".join(info_parts))
+        except Exception:
+            st.caption(f"**Student ID:** `{member_id}`")
+else:
     st.warning(
         f"{selected_model} is listed as a planned group model "
-        f"({UNAVAILABLE_MODELS[selected_model]}), but its implementation notebook "
-        "is not available in this project yet. Choose KNN, Logistic Regression, "
-        "or Decision Tree to continue."
+        f"({UNAVAILABLE_MODELS.get(selected_model, '')}), but its implementation "
+        "is not available yet. Please select another model to continue."
     )
 
 numeric_labels = {
@@ -168,13 +190,23 @@ if submitted:
     model_input = transform_user_input(user_input, bundle)
     model = bundle["models"][selected_model]
     predicted_class = int(model.predict(model_input)[0])
-    classes = list(model.classes_)
-    positive_probability = float(
-        model.predict_proba(model_input)[0][classes.index(1)]
-    )
-    st.subheader("Prediction")
-    if predicted_class == 1:
-        st.success("Predicted income group: **>50K**")
+    classes = list(getattr(model, "classes_", [0, 1]))
+
+    if hasattr(model, "predict_proba"):
+        pos_idx = classes.index(1) if 1 in classes else -1
+        positive_probability = float(model.predict_proba(model_input)[0][pos_idx])
+    elif hasattr(model, "decision_function"):
+        decision = float(model.decision_function(model_input)[0])
+        positive_probability = float(1.0 / (1.0 + np.exp(-np.clip(decision, -500, 500))))
     else:
-        st.info("Predicted income group: **<=50K**")
-    st.metric("Estimated probability of >50K", f"{positive_probability:.1%}")
+        positive_probability = float(predicted_class)
+
+    st.subheader("Prediction")
+    cols = st.columns(2)
+    with cols[0]:
+        if predicted_class == 1:
+            st.success("Predicted income group: **>50K**")
+        else:
+            st.info("Predicted income group: **<=50K**")
+    with cols[1]:
+        st.metric("Estimated probability of >50K", f"{positive_probability:.1%}")
