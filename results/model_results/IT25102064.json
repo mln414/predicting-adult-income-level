@@ -1,0 +1,18 @@
+{
+    "it_number": "IT25102064",
+    "model_name": "K-Nearest Neighbors (KNN)",
+    "best_hyperparameters": {
+        "scaler": "RobustScaler",
+        "n_neighbors": 15,
+        "weights": "distance",
+        "metric": "manhattan"
+    },
+    "metrics": {
+        "Accuracy": 0.8479,
+        "Balanced_Accuracy": 0.7668,
+        "Precision": 0.7011,
+        "Recall": 0.6140,
+        "F1_Score": 0.6546,
+        "ROC_AUC": 0.8938
+    }
+}

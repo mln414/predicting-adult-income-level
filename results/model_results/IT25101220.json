@@ -1,0 +1,23 @@
+{
+    "it_number": "IT25101220",
+    "model_name": "DecisionTree",
+    "best_hyperparameters": {
+        "class_weight": "balanced",
+        "criterion": "gini",
+        "max_depth": 10,
+        "min_samples_leaf": 5,
+        "min_samples_split": 20
+    },
+    "metrics": {
+        "Accuracy": 0.8003995082974801,
+        "Balanced_Accuracy": 0.8156301640089234,
+        "Precision": 0.5564888702225955,
+        "Recall": 0.8450255102040817,
+        "F1_Score": 0.6710559635350721,
+        "ROC_AUC": 0.8899394132653061,
+        "Train_Accuracy": 0.8238119021091859,
+        "Test_Accuracy": 0.8003995082974801,
+        "Generalization_Gap": 0.02341239381170579,
+        "Best_CV_F1": 0.6792667713673576
+    }
+}

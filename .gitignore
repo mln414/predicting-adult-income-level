@@ -18,3 +18,8 @@ ENV/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Model persistence artifacts
+*.joblib
+*.pkl
+results/saved_models/

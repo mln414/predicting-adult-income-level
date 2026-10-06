@@ -1,0 +1,25 @@
+{
+    "it_number": "IT25300115",
+    "model_name": "Gradient Boosting Classifier",
+    "best_hyperparameters": {
+        "subsample": 0.8,
+        "n_estimators": 500,
+        "min_samples_split": 2,
+        "min_samples_leaf": 1,
+        "max_features": null,
+        "max_depth": 5,
+        "learning_rate": 0.05
+    },
+    "metrics": {
+        "Accuracy": 0.8672800998128509,
+        "Balanced_Accuracy": 0.7852232927806029,
+        "Precision": 0.7628617363344051,
+        "Recall": 0.6305647840531562,
+        "F1_Score": 0.6904328846853401,
+        "ROC_AUC": 0.9242319095305576,
+        "Train_Accuracy": 0.904039616314435,
+        "Test_Accuracy": 0.8672800998128509,
+        "Generalization_Gap": 0.036759516501584044,
+        "Best_CV_F1": 0.7035207512722271
+    }
+}
