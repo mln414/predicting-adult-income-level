@@ -1,0 +1,85 @@
+{
+    "student_id": "IT25103014",
+    "model_name": "Support Vector Machine",
+    "model_class": "SVC",
+    "dataset": {
+        "target": "income",
+        "train_rows": 26029,
+        "test_rows": 6508,
+        "test_size": 0.2,
+        "random_state": 42,
+        "stratified_split": true
+    },
+    "class_distribution": {
+        "class_0_count": 24698,
+        "class_1_count": 7839,
+        "class_0_percentage": 75.91,
+        "class_1_percentage": 24.09
+    },
+    "preprocessing": {
+        "numerical_imputation": "median",
+        "categorical_imputation": "most_frequent",
+        "encoding": "OneHotEncoder(handle_unknown='ignore')",
+        "scaling": "StandardScaler on numerical features",
+        "scaling_used": true
+    },
+    "baseline": {
+        "accuracy": 0.8519,
+        "precision": 0.7488,
+        "recall": 0.5797,
+        "f1_score": 0.6535,
+        "roc_auc": 0.8949,
+        "train_accuracy": 0.8666,
+        "test_accuracy": 0.8519,
+        "generalization_gap": 0.0148
+    },
+    "cross_validation": {
+        "method": "StratifiedKFold",
+        "folds": 5,
+        "scoring": "f1",
+        "mean_f1": 0.6721,
+        "std_f1": 0.0119
+    },
+    "grid_search": {
+        "scoring": "f1",
+        "parameter_combinations": 30,
+        "total_fits": 150,
+        "best_cv_f1": 0.6889,
+        "best_params": {
+            "kernel": "rbf",
+            "C": 1,
+            "gamma": "scale",
+            "class_weight": "balanced"
+        }
+    },
+    "tuned": {
+        "accuracy": 0.8056,
+        "precision": 0.5642,
+        "recall": 0.8489,
+        "f1_score": 0.6779,
+        "roc_auc": 0.9001,
+        "train_accuracy": 0.8212,
+        "test_accuracy": 0.8056,
+        "generalization_gap": 0.0156
+    },
+    "confusion_matrix": {
+        "tn": 3912,
+        "fp": 1028,
+        "fn": 237,
+        "tp": 1331
+    },
+    "svm_details": {
+        "kernel": "rbf",
+        "support_vectors_per_class": [
+            7723,
+            2661
+        ]
+    },
+    "plot_files": {
+        "baseline_confusion_matrix": "results/eda_visualizations/models/IT25103014_SVM_Baseline_ConfusionMatrix.png",
+        "tuned_confusion_matrix": "results/eda_visualizations/models/IT25103014_SVM_Tuned_ConfusionMatrix.png",
+        "roc_curve": "results/eda_visualizations/models/IT25103014_SVM_ROC_Curve.png",
+        "precision_recall_curve": "results/eda_visualizations/models/IT25103014_SVM_PrecisionRecall_Curve.png",
+        "baseline_vs_tuned": "results/eda_visualizations/models/IT25103014_SVM_BaselineVsTuned.png"
+    }
+}
