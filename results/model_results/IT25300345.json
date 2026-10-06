@@ -1,1 +1,32 @@
-{"member": "IT25300345", "model": "RandomForest", "best_params": {"n_estimators": 100, "min_samples_split": 10, "min_samples_leaf": 2, "max_features": "sqrt", "max_depth": 30, "class_weight": "balanced"}, "metrics": {"accuracy": 0.8231441048034934, "precision": 0.5856812933025404, "recall": 0.8425249169435216, "f1": 0.691008174386921, "roc_auc": 0.9161142093436254}}
+{
+  "member_id": "IT25300345",
+  "model": "RandomForest",
+  "best_params": {
+    "bootstrap": true,
+    "ccp_alpha": 0.0,
+    "class_weight": "balanced_subsample",
+    "criterion": "gini",
+    "max_depth": null,
+    "max_features": "sqrt",
+    "max_leaf_nodes": null,
+    "max_samples": null,
+    "min_impurity_decrease": 0.0,
+    "min_samples_leaf": 1,
+    "min_samples_split": 10,
+    "min_weight_fraction_leaf": 0.0,
+    "monotonic_cst": null,
+    "n_estimators": 300,
+    "n_jobs": -1,
+    "oob_score": false,
+    "random_state": 42,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "metrics": {
+    "accuracy": 0.8541796631316282,
+    "precision": 0.6759259259259259,
+    "recall": 0.7275747508305648,
+    "f1_score": 0.7008,
+    "roc_auc": 0.9139597848893066
+  }
+}
